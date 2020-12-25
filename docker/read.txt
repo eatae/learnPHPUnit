@@ -1,0 +1,24 @@
+db_data
+    - хранение базы данных из контейнера
+
+nginx
+    - конф. для nginx
+    - Dockerfile
+
+php-cli
+    - Dockerfile
+
+
+----------------------
+
+
+Show:
+    learn-phpunit:8086
+
+Enter php-cli:
+    docker exec -it learn_phpunit-php-cli bash
+
+Docker-Compose up:
+    docker-compose up --build -d
+    docker-compose up -d
+
