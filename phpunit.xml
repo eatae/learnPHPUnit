@@ -1,6 +1,8 @@
-<?xml  version="1.0" encoding="UTF-8" ?>
-<phunit bootstrap="vendor/autoload.php">
-    <testsuit name="User">
+<?xml  version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="vendor/autoload.php">
+    <!-- test Group name - User -->
+    <testsuite name="User">
+        <!-- suffix and directory group -->
         <directory suffix="Test.php">./tests/User</directory>
-    </testsuit>
-</phunit>
+    </testsuite>
+</phpunit>
