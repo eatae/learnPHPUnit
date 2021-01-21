@@ -33,4 +33,4 @@ RUN pecl install xdebug \
 
 
 
-WORKDIR /var/www/learn_phpunit
+WORKDIR /var/www/phpunit

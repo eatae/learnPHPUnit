@@ -33,4 +33,4 @@ RUN pecl install xdebug \
 # add php.imi
 ADD ./php.ini /usr/local/etc/php/php.ini
 
-WORKDIR /var/www/learn_phpunit
+WORKDIR /var/www/phpunit
