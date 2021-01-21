@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-composer install
+php composer.phar install
 cd docker
 docker-compose up --build -d
