@@ -41,7 +41,6 @@ class UserTest extends TestCase
             'correct' => [23]
         ];
     }
-
     /**
      * @dataProvider ageProvider
      */
@@ -49,11 +48,47 @@ class UserTest extends TestCase
     {
         // проверяем равество
         $this->assertEquals($age, $this->user->getAge());
+        return 22;
     }
+
+    public function testOne()
+    {
+        return 100;
+    }
+
+    /**
+     * @depends testOne
+     */
+    public function testTwo($param)
+    {
+        $this->assertEquals($param, 100);
+    }
+
+
+
+    public function userProvider()
+    {
+        return [
+           'incorrect' => ['IncorrectName', 'test@email.com'],
+            'correct' => ['TestName', 'test@email.com']
+        ];
+    }
+
+    /**
+     * @dataProvider userProvider
+     */
+    public function testUser($name, $email)
+    {
+        $this->assertEquals($name, $this->user->getName());
+        $this->assertEquals($email, $this->user->getEmail());
+    }
+
+
+
 
     public function testPass()
     {
         // этот тест провалится
-        $this->assertEquals('0000', $this->user->getPass());
+        $this->assertEquals('1234', $this->user->getPass());
     }
 }
