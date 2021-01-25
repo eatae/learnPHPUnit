@@ -5,4 +5,10 @@
         <!-- suffix and directory group -->
         <directory suffix="Test.php">./tests/User</directory>
     </testsuite>
+
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./tests</directory>
+        </whitelist>
+    </filter>
 </phpunit>

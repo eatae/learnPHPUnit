@@ -17,7 +17,7 @@ class User
      * @param $pass
      * @param $age
      */
-    public function __construct($name, $email, $pass, $age)
+    public function __construct($name = null, $email = null, $pass = null, $age = null)
     {
         $this->name = $name;
         $this->email = $email;
