@@ -94,4 +94,13 @@ class User
         $this->age = $age;
     }
 
+
+    public function save(Db $db)
+    {
+        if ( !$db->connect() ) {
+            return false;
+        }
+        return true;
+    }
+
 }
