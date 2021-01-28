@@ -9,7 +9,7 @@ use PHPUnit\Framework\Error\Error;
 use PHPUnit\Framework\TestCase;
 
 
-class MocksTest extends TestCase
+class MockOneTest extends TestCase
 {
     /**
      * @var User
