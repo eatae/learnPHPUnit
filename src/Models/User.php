@@ -2,14 +2,19 @@
 
 namespace App\Models;
 
+use SplSubject;
+use SplObserver;
+use SplObjectStorage;
 
-class User
+
+class User implements SplSubject
 {
     private $name;
     private $email;
     private $pass;
     private $age;
 
+    private $observers;
     /**
      * User constructor.
      * @param $name
@@ -23,6 +28,32 @@ class User
         $this->email = $email;
         $this->pass = $pass;
         $this->age = $age;
+        $this->observers = new SplObjectStorage();
+    }
+
+    /**
+     * @param SplObserver $observer
+     */
+    public function attach(SplObserver $observer)
+    {
+        $this->observers->attach($observer);
+    }
+
+    /**
+     * @param SplObserver $observer
+     */
+    public function detach(SplObserver $observer)
+    {
+        $this->observers->detach($observer);
+    }
+
+
+    public function notify()
+    {
+        /** @var SplObserver $observer */
+        foreach ($this->observers as $observer) {
+            $observer->update($this);
+        }
     }
 
 
@@ -41,6 +72,7 @@ class User
     public function setName($name): void
     {
         $this->name = $name;
+        $this->notify();
     }
 
     /**
