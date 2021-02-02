@@ -14,6 +14,8 @@ class User implements SplSubject
     private $pass;
     private $age;
 
+    public $foo = 'bar';
+
     private $observers;
     /**
      * User constructor.
