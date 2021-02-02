@@ -83,6 +83,9 @@ class UserTest extends TestCase
     }
 
 
+    /**
+     * @dataProvider additionProvider
+     */
     public function testVerify($name, $email, $pass)
     {
         /* create new User */

@@ -28,7 +28,7 @@ class User implements SplSubject
     public function __construct()
     {
         $this->db = Db::get_instance();
-        $this->db->setConnection('localhost','root','','phpunit');
+        $this->db->setConnection('phpunit-mysql','root','2222','phpunit');
 
         $this->observers = new SplObjectStorage();
     }
