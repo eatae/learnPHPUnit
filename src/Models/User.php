@@ -9,55 +9,111 @@ use SplObjectStorage;
 
 class User implements SplSubject
 {
+
+    public const STATUS_WAIT = '0';
+    public const STATUS_ACTIVE = '1';
+
+    private $id;
     private $name;
     private $email;
     private $pass;
-    private $age;
+    private $isActive;
 
-    public $foo = 'bar';
-
+    private $db;
     private $observers;
+
     /**
      * User constructor.
-     * @param $name
-     * @param $email
-     * @param $pass
-     * @param $age
      */
-    public function __construct($name = null, $email = null, $pass = null, $age = null)
+    public function __construct()
     {
-        $this->name = $name;
-        $this->email = $email;
-        $this->pass = $pass;
-        $this->age = $age;
+        $this->db = Db::get_instance();
+        $this->db->setConnection('localhost','root','','phpunit');
+
         $this->observers = new SplObjectStorage();
     }
 
     /**
-     * @param SplObserver $observer
+     * @param $name
+     * @param $email
+     * @param $password
+     * @return User
      */
-    public function attach(SplObserver $observer)
-    {
-        $this->observers->attach($observer);
+    public function register($name, $email, $password) {
+        $sql = "INSERT INTO users SET name='".$name."',email='".$email."',password='".md5($password)."'";
+        $this->db->query($sql);
+
+        $this->setId( $this->db->getlastId() );
+        return $this->find($this->getId());
     }
 
     /**
-     * @param SplObserver $observer
+     * @param $id
+     * @return $this
      */
-    public function detach(SplObserver $observer)
-    {
-        $this->observers->detach($observer);
-    }
-
-
-    public function notify()
-    {
-        /** @var SplObserver $observer */
-        foreach ($this->observers as $observer) {
-            $observer->update($this);
+    public function find($id) {
+        $sql = "SELECT * FROM users WHERE id = '" . $id ."' LIMIT 1";
+        $result = $this->db->query($sql);
+        if($result) {
+            $row = $result->fetch_array();
+            $this->setName($row['name']);
+            $this->setPassword($row['password']);
+            $this->setEmail($row['email']);
+            $this->setIsActive($row['is_active']);
         }
+        return $this;
     }
 
+
+
+    /**
+     * Is Active
+     * @return bool
+     */
+    public function isActive(): bool
+    {
+        return $this->getIsActive() === self::STATUS_ACTIVE;
+    }
+
+    /**
+     * Is Wait
+     * @return bool
+     */
+    public function isWait(): bool
+    {
+        return $this->getIsActive() === self::STATUS_WAIT;
+    }
+
+
+    /**
+     * @throws \Exception
+     */
+    public function verify(): void
+    {
+        if (!$this->isWait()) {
+            throw new \Exception('User verified');
+        }
+        $sql = "UPDATE  users SET is_active='".self::STATUS_ACTIVE."' WHERE id = '" . $this->getId() . "'";
+        $this->db->query($sql);
+        $this->setIsActive(self::STATUS_ACTIVE);
+    }
+
+
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+    /**
+     * @param mixed $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
 
     /**
      * Name
@@ -84,6 +140,11 @@ class User implements SplSubject
      */
     public function getEmail()
     {
+        //@codeCoverageIgnoreStart
+        if(empty($this->email)) {
+            throw new InvalidArgumentException("message",10);
+        }
+        //@codeCoverageIgnoreEnd
         return $this->email;
     }
     /**
@@ -112,29 +173,45 @@ class User implements SplSubject
     }
 
     /**
-     * Age
-     *
      * @return mixed
      */
-    public function getAge()
+    public function getIsActive()
     {
-        return $this->age;
+        return $this->isActive;
     }
     /**
-     * @param mixed $age
+     * @param mixed $isActive
      */
-    public function setAge($age): void
+    public function setIsActive($isActive)
     {
-        $this->age = $age;
+        $this->isActive = $isActive;
     }
 
 
-    public function save(Db $db)
+
+
+    /**
+     * @param SplObserver $observer
+     */
+    public function attach(SplObserver $observer)
     {
-        if ( !$db->connect() ) {
-            return false;
+        $this->observers->attach($observer);
+    }
+
+    /**
+     * @param SplObserver $observer
+     */
+    public function detach(SplObserver $observer)
+    {
+        $this->observers->detach($observer);
+    }
+
+    public function notify()
+    {
+        /** @var SplObserver $observer */
+        foreach ($this->observers as $observer) {
+            $observer->update($this);
         }
-        return true;
     }
 
 }

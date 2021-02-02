@@ -66,7 +66,7 @@ class PhpUnitAssertsTest extends TestCase
 
         // $this->assertIsArray([]);
 
-        //$this->assertIsIterable($this->user);
+        // $this->assertIsIterable($this->user);
 
         // $this->assertLessThan(3, 2);
 

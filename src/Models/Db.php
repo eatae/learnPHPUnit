@@ -3,31 +3,65 @@
 namespace App\Models;
 
 
+
 class Db
 {
-    private $host;
-    private $username;
-    private $pass;
-    private $db;
+    private static $_instance;
+    /** @var \mysqli */
+    private $ins_db = null;
 
     /**
      * Db constructor.
+     */
+    private function __construct(){}
+
+
+    public static function get_instance()
+    {
+        if (self::$_instance instanceof static) {
+            return self::$_instance;
+        }
+        return self::$_instance = new static();
+    }
+
+    /**
      * @param $host
      * @param $username
      * @param $pass
      * @param $db
      */
-    public function __construct($host, $username, $pass, $db)
+    public function setConnection($host, $username, $pass, $db)
     {
-        $this->host = $host;
-        $this->username = $username;
-        $this->pass = $pass;
-        $this->db = $db;
+        try {
+            $this->ins_db = new \mysqli($host, $username, $pass, $db);
+            if ($this->ins_db->connect_error) {
+                throw new \Exception('Ошибка соединения: '.$this->ins_db->connect_error);
+            }
+            $this->ins_db->query("SET NAMES 'UTF8'");
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+        }
     }
 
-    public function connect($some_arg = true)
+    /**
+     * @param string $sql
+     * @return mixed
+     */
+    public function query(string $sql)
     {
-        // ...
-        return false;
+        return $this->ins_db->query($sql);
     }
+
+    /**
+     * @return mixed
+     */
+    public function getLastId()
+    {
+        return $this->ins_db->insert_id;
+    }
+
+
+
+
+
 }

@@ -14,79 +14,84 @@ class UserTest extends TestCase
     private $user;
 
 
-    /* вызывается перед каждым тестом
+    /*
+     * вызывается перед каждым тестом
      * здесь инициализируем необходимые объекты
      */
     protected function setUp(): void
     {
-        $this->user = new User('TestName', 'test@email.com', '1234', 23);
+        /* create Mock */
+        $this->user = $this->getMockBuilder(User::class)
+            ->disableOriginalConstructor()
+            ->disableOriginalClone()
+            ->disableArgumentCloning()
+            ->disallowMockingUnknownTypes()
+            ->getMock();
+
+        /* create returned value for method register */
+        $returnedUser = new User();
+        $returnedUser->setName("Return");
+        $returnedUser->setEmail("return@mail.com");
+        $returnedUser->setPass(md5("1234"));
+        $returnedUser->setIsActive("0");
+
+        $this->user->method('register')->willReturn($returnedUser);
     }
 
-    /* вызывается после выполнения каждого теста
+    /*
+     * вызывается после выполнения каждого теста
      * здесь обнуляем объекты с которыми работали (очищаем память)
      */
     protected function tearDown(): void
     {
-
         parent::tearDown();
     }
 
 
-    public function ageProvider()
+    /**
+     * Provider
+     * @return array
+     */
+    public function additionProvider()
     {
         return [
-            'incorrect' => [22],
-            'correct' => [23]
-        ];
-    }
-    /**
-     * @dataProvider ageProvider
-     */
-    public function testAge($age)
-    {
-        // проверяем равество
-        $this->assertEquals($age, $this->user->getAge());
-        return 22;
-    }
-
-    public function testOne()
-    {
-        return 100;
-    }
-
-    /**
-     * @depends testOne
-     */
-    public function testTwo($param)
-    {
-        $this->assertEquals($param, 100);
-    }
-
-
-
-    public function userProvider()
-    {
-        return [
-           'incorrect' => ['IncorrectName', 'test@email.com'],
-            'correct' => ['TestName', 'test@email.com']
+            ['Return', 'return@mail.com', '1234']
         ];
     }
 
+
     /**
-     * @dataProvider userProvider
+     * @dataProvider additionProvider
      */
-    public function testUser($name, $email)
+    public function testRegister($name, $email, $pass)
     {
-        $this->assertEquals($name, $this->user->getName());
-        $this->assertEquals($email, $this->user->getEmail());
+        /* create new User */
+        $user = $this->user->register($name, $email, $pass);
+
+        /* testing */
+        $this->assertNotEmpty($user);
+        // проверяем имя
+        $this->assertEquals($name, $user->getName());
+        // проверяем email
+        $this->assertEquals($email, $user->getEmail());
+        // сохранился ли пароль в БД
+        $this->assertNotEmpty($user->getPass());
+        // захешировался ли он
+        $this->assertNotEquals($pass, $user->getPass());
+        // пользователь при регистрации должен остаться не активным
+        $this->assertFalse($user->isActive());
     }
 
 
-
-
-    public function testPass()
+    public function testVerify($name, $email, $pass)
     {
-        // этот тест провалится
-        $this->assertEquals('1234', $this->user->getPass());
+        /* create new User */
+        $user = $this->user->register($name, $email, $pass);
+        $user->verify();
+        /* testing */
+        $this->assertTrue($user->isActive());
+        // Exception при повторной верификации
+        $this->expectException(\Exception::class);
+        $user->verify();
     }
 }
