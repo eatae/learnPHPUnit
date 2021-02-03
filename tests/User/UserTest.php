@@ -67,6 +67,7 @@ class UserTest extends TestCase
     {
         /* create new User */
         $user = $this->user->register($name, $email, $pass);
+        $this->assertInstanceOf(User::class, $user->register($name, $email, $pass));
 
         /* testing */
         $this->assertNotEmpty($user);
