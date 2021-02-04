@@ -48,6 +48,7 @@ class User implements SplSubject
     }
 
     /**
+     * @codeCoverageIgnore
      * @param $id
      * @return $this
      */
